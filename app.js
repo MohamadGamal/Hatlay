@@ -5,7 +5,8 @@ var postMiddleware = bodyParser.urlencoded({extended:true});
 var config = require ("./config");
 
 var userRouter=require("./controller/User");
-//var orderRouter=require("./controller/Order");
+var orderRouter=require("./controller/Order");
+var resturantRouter=require("./controller/Resturant");
 var jwt = require ("jsonwebtoken")
 
 var mongoose=require("mongoose");
@@ -35,7 +36,8 @@ app.use(function(request,response,next){
 });
 
 app.use("/user",userRouter);
-//app.use("/order",orderRouter);
+app.use("/order",orderRouter);
+//app.use("/order",resturantRouter);
 app.use("*",(request,response)=>{
     response.json(request.user);
 });
