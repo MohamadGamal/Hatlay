@@ -13,7 +13,7 @@ var validator = require('validator');
 var bodyParserMiddelWare = bodyParser.urlencoded({extended:false});
 router.use(bodyParser.json());
 
-var friendRouter = require("./Friend"); 
+var friendRouter = require("./UserEmbded")({collection:"user",field:"friends"}); 
 
 router.use("/friend",friendRouter);
 
