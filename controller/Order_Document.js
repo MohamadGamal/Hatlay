@@ -1,44 +1,47 @@
+
+module.exports=function(parameterObject){
 var express=require('express');
 var router=express.Router();
-var Order = require(__dirname+"/../model/Order")
+var Order = require("./Order")
 var mongoose=require("mongoose");
-var mealsRouter=require("./Order_Document")({document:"HEY"});
-//var mealsRouter=require("./Order_Meals");
 var bodyParser = require('body-parser')
 var postMiddleware = bodyParser.urlencoded({extended:true});
-
-var validator=require("validator");
-
-//router.use("/:uid/users/",usersRouter);
-
-
 router.get("/",function(request,response){
-//$text:{$search:request.params.query}
-
-Order.find({},
+    console.log("IN");
+    response.json(request.ord);
+Order.find({_id:request.ord},
+{parameterObject:true},
       function (err , data){
         if(!err){
           response.json(data);
         }
       });
 });
-router.get("/:query",function(request,response){
-//$text:{$search:request.params.query}
-var srchobj=validator.isMongoId(request.params.query)?{_id:request.params.query}:{$text:{$search:request.params.query}};
-console.log(srchobj);
+router.get("/:docid",function(request,response){
+    console.log("IN");
+    response.json(request.ord);
+    var srchobj=projobj={};
+    projobj[parameterObject.propname]=true;
+srchobj["'"+parameterObject.propname+"."+parameterObject.docpart+"'"] =request.param.docid;
+srchobj[_id]=request.ord;
 Order.find(srchobj,
+projobj,
       function (err , data){
         if(!err){
           response.json(data);
         }
       });
 });
-
 router.post("/",postMiddleware,function(request,response){
 
-   // mongoose.set('debug', true);  
-    
-    order= new Order(request.body);
+
+   var ordertarg= Order.find({_id:request.params.query},
+      function (err , data){
+        if(!err){
+          response.json(data);
+        }
+      });
+    ordertarg
     console.log(order);
     console.log(typeof request.body.meals);
     order.save(function(err,info){
@@ -63,10 +66,6 @@ router.delete("/:id",function(request,response){
   response.json(err?err:info);
 })
 });
-function middlebody(request,response,next){
-request.ord=request.params;
-    next();
+
+return router;
 }
-router.use("/:ordid",middlebody);
-router.use("/:ordid/meal/",mealsRouter);
-module.exports=router;

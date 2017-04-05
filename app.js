@@ -1,11 +1,14 @@
 var express = require('express');
 var bodyParser = require('body-parser')
+var validator = require('validator')
 var postMiddleware = bodyParser.urlencoded({extended:true});
-
+var xssvalidator = require('./util/xssvalidator');
 var config = require ("./config");
 
 var userRouter=require("./controller/User");
-//var orderRouter=require("./controller/Order");
+var orderRouter=require("./controller/Order");
+var resturantRouter=require("./controller/Resturant");
+var groupRouter=require("./controller/Group");
 var jwt = require ("jsonwebtoken")
 
 var mongoose=require("mongoose");
@@ -13,6 +16,12 @@ mongoose.connect(config.db);
 
 var app = express();
 app.use(bodyParser.json())
+app.use(xssvalidator);
+var fs=require("fs");
+fs.readdirSync(__dirname+"/model").forEach(function(file){
+  require("./model/"+file);
+})
+
 
 
 app.use(function(request,response,next){          
@@ -36,7 +45,9 @@ app.use(function(request,response,next){
 });
 
 app.use("/user",userRouter);
-//app.use("/order",orderRouter);
+app.use("/order",orderRouter);
+app.use("/group",groupRouter);
+//app.use("/resturant",resturantRouter);
 app.use("*",(request,response)=>{
     response.json(request.user);
 });
