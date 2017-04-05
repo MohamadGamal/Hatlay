@@ -2,11 +2,12 @@ var mongoose = require("mongoose");
 
 var Schema = mongoose.Schema;
 
-var user =new  Schema({
-    name     : String,
-    adminId    : mongoose.Types.ObjectId,
+var group =new  Schema({
+    name     : {type:String,required:true},
+    adminId    : {type:Schema.Types.ObjectId,required:true},
     image : String,
+    users:{type:[{type:Schema.Types.ObjectId,ref:"users"}],required:true}//REPLACE BY USERS
     
 });
 
-mongoose.model("user",user);
+module.exports=mongoose.model("groups",group);

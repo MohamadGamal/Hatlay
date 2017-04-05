@@ -1,5 +1,4 @@
 
-//>>TBD
 var mongoose=require("mongoose")
 var Schema=mongoose.Schema;
 
@@ -9,4 +8,6 @@ var resturants=new Schema({
   location:{name:String,coords:{x:Number,y:Number}},
 })
 
-mongoose.model("resturant",products);
+
+
+module.exports=mongoose.model("resturants",resturants);
