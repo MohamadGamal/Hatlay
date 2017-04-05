@@ -1,7 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser')
+var validator = require('validator')
 var postMiddleware = bodyParser.urlencoded({extended:true});
-
+var xssvalidator = require('./util/xssvalidator');
 var config = require ("./config");
 
 var userRouter=require("./controller/User");
@@ -15,7 +16,7 @@ mongoose.connect(config.db);
 
 var app = express();
 app.use(bodyParser.json())
-
+app.use(xssvalidator);
 var fs=require("fs");
 fs.readdirSync(__dirname+"/model").forEach(function(file){
   require("./model/"+file);
