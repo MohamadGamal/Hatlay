@@ -20,6 +20,7 @@ app.use(function(request,response,next){
     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,x-access-token');
     response.setHeader('Access-Control-Allow-Credentials', true);
+    response.setHeader('X-XSS-Protection',true);
 
     //// get token from header , body or query ,
   var token = request.body.token || request.query.token || request.headers['x-access-token'];

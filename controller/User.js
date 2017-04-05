@@ -48,14 +48,18 @@ router.post("/register",(request , response )=>{
 router.post("/login",(request,response)=>{
     console.log(request.body.email);
     mongoose.model("user")
-        .findOne({email:request.body.email},(err,user)=>{
+        .findOne({email:request.body.email})
+        .populate('friends','name')
+        .exec((err,user)=>{
             console.log(user);
             if(user && user.password == request.body.password){
                 response.status(200);
+                user.password = "";
                 var token = jwt.sign({name:user.name,id:user.id},config.secret,{expiresIn:1440*60})
-                response.json({user:{name:user.name,id:user.id},token:token});
+                response.json({user:user,token:token});
             }
-        });
+        }
+        );
 });
 
 
