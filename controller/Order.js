@@ -2,17 +2,17 @@ var express=require('express');
 var router=express.Router();
 var Order = require(__dirname+"/../model/Order")
 var mongoose=require("mongoose");
-var modelRouter=require("./Router_Document")("Order");
-var usersRouter=modelRouter({
-            propname:"users",
-            docpart:"userId",
+// var modelRouter=require("./Router_Document")("Order");
+// var usersRouter=modelRouter({
+//             propname:"users",
+//             docpart:"userId",
           
-         });
-var mealsRouter=modelRouter({
-            propname:"meals",
-            docpart:"_id",
+         // });
+// var mealsRouter=modelRouter({
+//             propname:"meals",
+//             docpart:"_id",
            
-         });
+//          });
 //var mealsRouter=require("./Order_Meals");
 var bodyParser = require('body-parser')
 var postMiddleware = bodyParser.urlencoded({extended:true});
@@ -78,5 +78,5 @@ router.delete("/:id",function(request,response){
  middlebody=require("../util/paramsaver");
 router.use("/:ordid",middlebody);
 router.use("/:ordid/user/",usersRouter);
-router.use("/:ordid/meal/",mealsRouter);
+// router.use("/:ordid/meal/",mealsRouter);
 module.exports=router;
