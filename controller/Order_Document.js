@@ -2,15 +2,20 @@
 module.exports=function(parameterObject){
 var express=require('express');
 var router=express.Router();
-var Order = require("./Order")
+var Order = require("../model/Order")
 var mongoose=require("mongoose");
 var bodyParser = require('body-parser')
 var postMiddleware = bodyParser.urlencoded({extended:true});
+var attrtobe=parameterObject.propname;
+var attrtobe=parameterObject.docpart?attrtobe+'.'+parameterObject.docpart:attrtobe;
 router.get("/",function(request,response){
     console.log("IN");
-    response.json(request.ord);
-Order.find({_id:request.ord},
-{parameterObject:true},
+    projobj={};
+    projobj[parameterObject.propname]=true;
+   // response.json(request.oldobj.id);
+   console.log("REG",request.oldobj);
+Order.find({_id:request.oldobj.id},
+projobj,
       function (err , data){
         if(!err){
           response.json(data);
@@ -19,42 +24,35 @@ Order.find({_id:request.ord},
 });
 router.get("/:docid",function(request,response){
     console.log("IN");
-    response.json(request.ord);
-    var srchobj=projobj={};
-    projobj[parameterObject.propname]=true;
-srchobj["'"+parameterObject.propname+"."+parameterObject.docpart+"'"] =request.param.docid;
-srchobj[_id]=request.ord;
+   // response.json(request.oldobj.id);
+    var srchobj={_id:request.oldobj.id};
+    var projobj={};
+    projobj[parameterObject.propname+'.$']=true;
+srchobj[attrtobe] =request.params.docid;
 Order.find(srchobj,
 projobj,
       function (err , data){
         if(!err){
-          response.json(data);
+          response.json(err?err:data);
         }
       });
 });
 router.post("/",postMiddleware,function(request,response){
-
-
-   var ordertarg= Order.find({_id:request.params.query},
-      function (err , data){
-        if(!err){
-          response.json(data);
-        }
-      });
-    ordertarg
-    console.log(order);
-    console.log(typeof request.body.meals);
-    order.save(function(err,info){
-           response.json(err?err:info);
-
-    });
-
+    var addedobj={};
+    addedobj[parameterObject.propname]=request.body;
+ Order.findByIdAndUpdate(request.oldobj.id, {$addToSet: addedobj }, function (err, data) {
+  response.json(err?err:data);
+});
 });
 
 router.put("/:id",postMiddleware,function(request,response){
       mongoose.set('debug', true); 
-
-  Order.findByIdAndUpdate(request.params.id, request.body, function (err, data) {
+    var addedobj={};
+    var findobj= {_id:request.oldobj.id};
+    findobj[attrtobe]=request.params.id;
+//   console.log("OBJECT",findobj,addedobj)
+    addedobj[parameterObject.propname+".$"]=request.body;
+ Order.update(findobj, {$set: addedobj }, function (err, data) {
   response.json(err?err:data);
 });
   
@@ -62,9 +60,15 @@ router.put("/:id",postMiddleware,function(request,response){
 });
 
 router.delete("/:id",function(request,response){
- Order.remove({_id:request.params.id},function (err, info) {
-  response.json(err?err:info);
-})
+   mongoose.set('debug', true); 
+   var subobj={};
+   subobj[parameterObject.docpart?parameterObject.docpart:0]=request.params.id
+    var addedobj={};
+    addedobj[parameterObject.propname]=parameterObject.docpart?subobj:request.params.id;
+ Order.findByIdAndUpdate(request.oldobj.id, {$pull: addedobj }, function (err, data) {
+  response.json(err?err:data);
+});
+  
 });
 
 return router;
