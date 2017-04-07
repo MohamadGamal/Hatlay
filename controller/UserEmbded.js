@@ -27,9 +27,9 @@ router.get("/:id",function(request,response){
                     var UserModel = mongoose.model(option.collection);    
  
                   var i=0;   
-                  while(i<user[option.field].length && user[option.field][i++].toString()!=request.params.id);                 
+                  while(i!=user[option.field].length && user[option.field][i].toString()!=request.params.id&&++i);                 
                   console.log(i,i<user[option.field].length);
-                    if (! (i<user[option.field].length)){
+                    if (i==user[option.field].length){
 
                                 user[option.field].push(request.params.id);
                               user.save(()=>{

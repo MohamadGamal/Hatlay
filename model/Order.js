@@ -15,7 +15,9 @@ var orders=new Schema({
     groupId:Schema.Types.ObjectId,
     name:{type:String,required:true},
     groupname:String
-  }],required:true },
+  }]
+  ,required:true 
+},
   meals:
   [{
     name:String,

@@ -16,7 +16,7 @@ mongoose.connect(config.db);
 
 var app = express();
 app.use(bodyParser.json())
-app.use(xssvalidator);
+//app.use(xssvalidator);
 var fs=require("fs");
 fs.readdirSync(__dirname+"/model").forEach(function(file){
   require("./model/"+file);

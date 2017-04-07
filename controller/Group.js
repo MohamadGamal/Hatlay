@@ -1,7 +1,7 @@
 var express=require('express');
 var router=express.Router();
 var Group = require(__dirname+"/../model/Group")
-
+var fs=require("fs")
 var mongoose=require("mongoose");
 // var modelRouter=require("./Router_Document")("Group");
 // var usersRouter=modelRouter({
@@ -33,11 +33,22 @@ Group.find(srchobj).populate('users').exec(
         }
       });
 });
+function rewriteimage(body,propname,dest="."){
+var Randname= Math.round(Math.random()*10000000) +""+ +new Date();
+var Fullname=dest+"/"+Randname;
+ var matches = body[propname].match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
+var imbuffer = new Buffer(matches[2], 'base64')
+fs.writeFileSync(Fullname, imbuffer);
+body[propname]=Fullname;
+console.log("WRITTEN");
 
+
+}
 router.post("/",postMiddleware,function(request,response){
 
    // mongoose.set('debug', true);  
-    
+ rewriteimage(request.body,"image");
+  
     group= new Group(request.body);
     console.log(group);
     console.log(typeof request.body.meals);
