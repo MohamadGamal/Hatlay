@@ -3,11 +3,11 @@ var router=express.Router();
 var Group = require(__dirname+"/../model/Group")
 
 var mongoose=require("mongoose");
-var modelRouter=require("./Router_Document")("Group");
-var usersRouter=modelRouter({
-            propname:"users",
+// var modelRouter=require("./Router_Document")("Group");
+// var usersRouter=modelRouter({
+//             propname:"users",
         
-         });
+//          });
 var bodyParser = require('body-parser')
 var postMiddleware = bodyParser.urlencoded({extended:true});
 
