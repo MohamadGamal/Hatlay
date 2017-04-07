@@ -16,7 +16,7 @@ mongoose.connect(config.db);
 
 var app = express();
 app.use(bodyParser.json())
-app.use(xssvalidator);
+//app.use(xssvalidator);
 var fs=require("fs");
 fs.readdirSync(__dirname+"/model").forEach(function(file){
   require("./model/"+file);
@@ -50,7 +50,7 @@ app.use(function(request,response,next){
 app.use("/user",userRouter);
 app.use("/order",orderRouter);
 app.use("/group",groupRouter);
-//app.use("/resturant",resturantRouter);
+app.use("/resturant",resturantRouter);
 app.use("*",(request,response)=>{
     response.json(request.user);
 });

@@ -6,7 +6,7 @@ var group =new  Schema({
     name     : {type:String,required:true},
     adminId    : {type:Schema.Types.ObjectId,required:true},
     image : String,
-    users:{type:[{type:Schema.Types.ObjectId,ref:"orders"}],required:true}//REPLACE BY USERS
+    users:{type:[{type:Schema.Types.ObjectId,ref:"user"}],required:true}//REPLACE BY USERS
     
 });
 
