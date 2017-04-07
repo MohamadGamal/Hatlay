@@ -84,7 +84,10 @@ router.get("/",(request , response)=>{
 router.get("/:id",(request , response)=>{
     if(validator.isMongoId(request.params.id)){
         mongoose.model("user")
-        .findOne({_id:request.params.id},(err,data)=>{
+        .findOne({_id:request.params.id})
+        .populate('friends')
+        .exec(
+        (err,data)=>{
             if(!err){
                 response.json(data);                
                 }
