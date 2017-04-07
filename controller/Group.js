@@ -26,7 +26,7 @@ router.get("/:query",function(request,response){
 //$text:{$search:request.params.query}
 var srchobj=validator.isMongoId(request.params.query)?{_id:request.params.query}:{$text:{$search:request.params.query}};
 console.log(srchobj);
-Group.find(srchobj,
+Group.find(srchobj).populate('users').exec(
       function (err , data){
         if(!err){
           response.json(data);

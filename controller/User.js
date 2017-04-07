@@ -37,10 +37,12 @@ router.post("/register",(request , response )=>{
             response.status(200);
             console.log(data);
             var token = jwt.sign({name:data.name,id:data.id},config.secret,{expiresIn:1440*60})
-                response.json({user:{name:user.name,id:user.id},token:token});
+            var u= {name:user.name,id:user.id};
+            response.json({user:u,token:token});
         }else{
             response.status(550);
-            response.json("error");
+            console.log(err.code);
+            response.json(err.code);
         }
     });
 });
@@ -48,14 +50,21 @@ router.post("/register",(request , response )=>{
 router.post("/login",(request,response)=>{
     console.log(request.body.email);
     mongoose.model("user")
-        .findOne({email:request.body.email},(err,user)=>{
-            console.log(user);
+        .findOne({email:request.body.email})
+        .populate('friends','name')
+        .exec((err,user)=>{
+
             if(user && user.password == request.body.password){
                 response.status(200);
+                user.password = "";
+                user.friends = user.friends?user.friends:[];
+                user.groups = user.groups?user.groups:[];
+                console.log(user);
                 var token = jwt.sign({name:user.name,id:user.id},config.secret,{expiresIn:1440*60})
-                response.json({user:{name:user.name,id:user.id},token:token});
+                response.json({user:user,token:token});
             }
-        });
+        }
+        );
 });
 
 
@@ -75,7 +84,10 @@ router.get("/",(request , response)=>{
 router.get("/:id",(request , response)=>{
     if(validator.isMongoId(request.params.id)){
         mongoose.model("user")
-        .findOne({_id:request.params.id},(err,data)=>{
+        .findOne({_id:request.params.id})
+        .populate('friends')
+        .exec(
+        (err,data)=>{
             if(!err){
                 response.json(data);                
                 }
