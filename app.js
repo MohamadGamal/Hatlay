@@ -50,7 +50,7 @@ app.use(function(request,response,next){
 app.use("/user",userRouter);
 app.use("/order",orderRouter);
 app.use("/group",groupRouter);
-//app.use("/resturant",resturantRouter);
+app.use("/resturant",resturantRouter);
 app.use("*",(request,response)=>{
     response.json(request.user);
 });
