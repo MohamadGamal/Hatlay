@@ -23,7 +23,7 @@ fs.readdirSync(__dirname+"/model").forEach(function(file){
 })
 
 
-
+console.log("lol");
 app.use(function(request,response,next){          
     response.setHeader('Access-Control-Allow-Origin', '*');
     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -34,10 +34,13 @@ app.use(function(request,response,next){
     //// get token from header , body or query ,
   var token = request.body.token || request.query.token || request.headers['x-access-token'];
 
+  console.log("token ::" +token);            
+
     //// verify token and extract user data from it 
   jwt.verify(token,config.secret,function(err,decode){
             if(!err){
                 request.user=decode;
+                console.log("user data from token :");            
                 console.log(decode);            
                 }
             next();
