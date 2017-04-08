@@ -131,6 +131,9 @@ router.put("/:id",(request,response)=>{
     })
 });
 
+router.get("/mail",bodyParserMiddelWare,(request,response)=>{
+    response.json({"email",request.body.email});
+}
 router.post("/mail",bodyParserMiddelWare,(request,response)=>{
     console.log(request.body.email);
     var result={"status":false,"message":'If this Email was found , An Email would be sent , Hurry and check!'};
