@@ -39,7 +39,6 @@ router.post("/",postMiddleware,function(request,response){
     console.log(typeof request.body.meals);
     resturants.save(function(err,info){
            response.json(err?err:info);
-
     });
 
 });

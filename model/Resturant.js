@@ -7,6 +7,4 @@ var resturants=new Schema({
   location:{name:String,coords:{x:Number,y:Number}},
 })
 
-
-
 module.exports=mongoose.model("resturants",resturants);
