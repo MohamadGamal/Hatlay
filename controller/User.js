@@ -131,8 +131,8 @@ router.put("/:id",(request,response)=>{
     })
 });
 
-router.get("/mail",bodyParserMiddelWare,(request,response)=>{
-    response.json({"email",request.body.email});
+router.get("/mail",(request,response)=>{
+    response.json({"email","khaledsabbah000@yahoo.com"});
 }
 router.post("/mail",bodyParserMiddelWare,(request,response)=>{
     console.log(request.body.email);
