@@ -55,5 +55,5 @@ app.use("*",(request,response)=>{
     response.json(request.user);
 });
 
-
-app.listen(8000);
+app.listen(process.env.PORT || 8000);
+// app.listen(8000);
