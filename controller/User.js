@@ -131,19 +131,18 @@ router.put("/:id",(request,response)=>{
     })
 });
 
-router.post("/mail",(request,response)=>{
+router.post("/mail",bodyParserMiddelWare,(request,response)=>{
     console.log(request.body.email);
     var result={"status":false,"message":'If this Email was found , An Email would be sent , Hurry and check!'};
     var token = jwt.sign({name:data.name,id:data.id},config.secret,{expiresIn:1440*60});
     mongoose.model("user")
-        .findOne({email:request.body.email})
-        .populate('friends','name')
-        .exec((err,user)=>{
+        .findOne({email:request.body.email},function(err,user){
             if(user){
                 user._token=token;
+                result.status=true;
                 user.save(function (err) {
-                    if(!err){
-                        result.status=true;
+                    if(err){
+                        result.status=false;
                     }
                 })
             }
@@ -179,16 +178,10 @@ router.post("/mail",(request,response)=>{
             }
 
         });
-        response.json(result);
-    }else {
-        response.json(result);
     }
-    
 
-
-
-    
-        }
+    response.json(result);
+}
 
 
 module.exports= router;
