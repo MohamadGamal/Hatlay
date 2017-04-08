@@ -8,11 +8,11 @@ var usersRouter=modelRouter({
             docpart:"userId",
           
           });
-// var mealsRouter=modelRouter({
-//             propname:"meals",
-//             docpart:"_id",
+var mealsRouter=modelRouter({
+             propname:"meals",
+             docpart:"_id",
            
-//          });
+          });
 //var mealsRouter=require("./Order_Meals");
 var bodyParser = require('body-parser')
 
@@ -22,7 +22,7 @@ var validator=require("validator");
 
 //router.use("/:uid/users/",usersRouter);
 
-/*
+
 router.get("/",function(request,response){
 //$text:{$search:request.params.query}
 
@@ -33,25 +33,11 @@ Order.find({},
         }
       });
 });
-*/
 router.get("/:query",function(request,response){
 //$text:{$search:request.params.query}
 //var srchobj=validator.isMongoId(request.params.query)?{_id:request.params.query}:{$text:{$search:request.params.query}};
 
-console.log(srchobj);
-Order.find({'users.userId':request.user.id},
-      function (err , data){
-        if(!err){
-          response.json(data);
-        }
-      });
-});
-router.get("/:query",function(request,response){
-//$text:{$search:request.params.query}
-//var srchobj=validator.isMongoId(request.params.query)?{_id:request.params.query}:{$text:{$search:request.params.query}};
-
-console.log(srchobj);
-Order.find({'users.userId':request.user.id},
+Order.find({'_id':request.params.query},
       function (err , data){
         if(!err){
           response.json(data);
@@ -61,7 +47,18 @@ Order.find({'users.userId':request.user.id},
 
 
 
+router.get("/user/:query",function(request,response){
+//$text:{$search:request.params.query}
+//var srchobj=validator.isMongoId(request.params.query)?{_id:request.params.query}:{$text:{$search:request.params.query}};
 
+
+Order.find({'users.userId':request.params.query},
+      function (err , data){
+        if(!err){
+          response.json(data);
+        }
+      });
+});
 
 
 
@@ -101,5 +98,5 @@ router.delete("/:id",function(request,response){
  middlebody=require("../util/paramsaver");
 router.use("/:ordid",middlebody);
 router.use("/:ordid/user/",usersRouter);
-// router.use("/:ordid/meal/",mealsRouter);
+router.use("/:ordid/meal/",mealsRouter);
 module.exports=router;
