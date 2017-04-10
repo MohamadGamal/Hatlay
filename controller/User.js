@@ -131,4 +131,60 @@ router.put("/:id",(request,response)=>{
     })
 });
 
+router.get("/mail",(request,response)=>{
+    response.json({"email","khaledsabbah000@yahoo.com"});
+}
+router.post("/mail",bodyParserMiddelWare,(request,response)=>{
+    console.log(request.body.email);
+    var result={"status":false,"message":'If this Email was found , An Email would be sent , Hurry and check!'};
+    var token = jwt.sign({name:data.name,id:data.id},config.secret,{expiresIn:1440*60});
+    mongoose.model("user")
+        .findOne({email:request.body.email},function(err,user){
+            if(user){
+                user._token=token;
+                result.status=true;
+                user.save(function (err) {
+                    if(err){
+                        result.status=false;
+                    }
+                })
+            }
+            });
+    if(result.status){
+        var nodemailer = require('nodemailer');
+        var transporter = nodemailer.createTransport({
+            host: 'smtp.mail.yahoo.com',
+            port: 465,
+            secure: true, // use SSL
+            auth: {
+                user: 'khaledsabbah000@yahoo.com',
+                pass: 'Kh040534280997'
+            }
+        });    
+        
+        var from='"YallaNutlob " <khaledsabbah000@yahoo.com>';
+        var subject ='YallaNutlob password reset Notification';
+        var url="https://hatlay.herokuapp.com/user/?_token="+token;
+        var mailOptions = {
+            from: from, // sender address (who sends)
+            to: request.body.email , // list of receivers (who receives)
+            subject: subject , // Subject line
+            text: 'Hi  this is the mail as requried to be sent', // plaintext body
+            html: '<b>Please click this link to reset your password </b>'+url+
+                        ' How to register using facebook and google in Node.js</a><img scr="/home/khaledgamal/Pictures/Killua1.jpg">' // html body
+        };
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log("some thing happened and cause errors in mailing sevice")
+                result.status=false;
+            }
+
+        });
+    }
+
+    response.json(result);
+}
+
+
 module.exports= router;
