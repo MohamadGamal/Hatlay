@@ -3,6 +3,7 @@ var router=express.Router();
 var Order = require(__dirname+"/../model/Order")
 var mongoose=require("mongoose");
  var modelRouter=require("./Router_Document")("Order");
+ var propRouter=require("./Router_Property")("Order");
 var usersRouter=modelRouter({
              propname:"users",
             docpart:"userId",
@@ -12,6 +13,10 @@ var mealsRouter=modelRouter({
              propname:"meals",
              docpart:"_id",
            
+          });
+var statusRouter=propRouter({
+             propname:"status"
+  
           });
 //var mealsRouter=require("./Order_Meals");
 var bodyParser = require('body-parser')
@@ -37,7 +42,7 @@ router.get("/:query",function(request,response){
 //$text:{$search:request.params.query}
 //var srchobj=validator.isMongoId(request.params.query)?{_id:request.params.query}:{$text:{$search:request.params.query}};
 
-Order.find({'_id':request.params.query},
+Order.findOne({'_id':request.params.query},
       function (err , data){
         if(!err){
           response.json(data);
@@ -99,4 +104,5 @@ router.delete("/:id",function(request,response){
 router.use("/:ordid",middlebody);
 router.use("/:ordid/user/",usersRouter);
 router.use("/:ordid/meal/",mealsRouter);
+router.use("/:ordid/status/",statusRouter);
 module.exports=router;

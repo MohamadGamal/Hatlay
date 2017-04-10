@@ -23,8 +23,11 @@ var orders=new Schema({
     name:String,
     price:Number,
     amount:Number,
+      username:String,
+      comment:String,
     itemId:Schema.Types.ObjectId,
-    userId:Schema.Types.ObjectId
+    userId:Schema.Types.ObjectId,
+  
   }]
 });
 
