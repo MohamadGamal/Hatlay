@@ -7,7 +7,7 @@ var user =new  Schema({
     email    : {type:String,required:true,unique:true},
     password : {type:String,required:true},
     friends  : [{type:Schema.Types.ObjectId,ref:'user'}],
-    groups   : [{type:Schema.Types.ObjectId,ref: "groups"}]
+    groups   : [{type:Schema.Types.ObjectId,ref: "groups"}],
     _token	 : {type:String,required:false},
 });
-mongoose.model("user",user);
+module.exports=mongoose.model("user",user);

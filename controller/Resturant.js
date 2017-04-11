@@ -1,7 +1,7 @@
 var express=require('express');
 var router=express.Router();
 var Resturants = require(__dirname+"/../model/Resturant")
-
+var fs=require("fs")
 var mongoose=require("mongoose");
 
 var bodyParser = require('body-parser')
@@ -29,11 +29,21 @@ Resturants.find(srchobj,
         }
       });
 });
+function rewriteimage(body,propname,dest="."){
+var Randname= Math.round(Math.random()*10000000) +""+ +new Date();
+var Fullname=dest+"/"+Randname;
+ var matches = body[propname].match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
+var imbuffer = new Buffer(matches[2], 'base64')
+fs.writeFileSync(Fullname, imbuffer);
+body[propname]=Fullname;
+console.log("WRITTEN");
 
+
+}
 router.post("/",postMiddleware,function(request,response){
 
    // mongoose.set('debug', true);  
-    
+    rewriteimage(request.body,"menu");
     resturants= new Resturants(request.body);
     console.log(resturants);
     console.log(typeof request.body.meals);

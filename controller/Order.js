@@ -9,6 +9,10 @@ var usersRouter=modelRouter({
             docpart:"userId",
           
           });
+usersRouter.onhook('getsave',(param,body)=>{
+  console.log('IN HOOOOL',param,body)
+})
+
 var mealsRouter=modelRouter({
              propname:"meals",
              docpart:"_id",

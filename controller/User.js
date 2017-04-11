@@ -12,11 +12,14 @@ var validator = require('validator');
 
 var bodyParserMiddelWare = bodyParser.urlencoded({extended:false});
 router.use(bodyParser.json());
-
+ var modelRouter=require("./Router_Document")("User");
 var friendRouter = require("./UserEmbded")({collection:"user",field:"friends"}); 
 
 router.use("/friend",friendRouter);
-
+var groupRouter=modelRouter({
+             propname:"groups"
+          
+          });
 
 // router.use((request,response,next)=>{
 //      response.send(error.email);
@@ -51,7 +54,9 @@ router.post("/login",(request,response)=>{
     console.log(request.body.email);
     mongoose.model("user")
         .findOne({email:request.body.email})
+        .populate('groups')
         .populate('friends','name')
+       
         .exec((err,user)=>{
 
             if(user && user.password == request.body.password){
@@ -74,6 +79,7 @@ router.get("/",(request , response)=>{
         ///// return just 10 friends 
         .find({},{friends:{$slice:10}})
         .populate('friends')
+        .populate('groups')
         .exec((err,data)=>{
             if(!err){
                 response.json(data);                
@@ -86,6 +92,7 @@ router.get("/:id",(request , response)=>{
         mongoose.model("user")
         .findOne({_id:request.params.id})
         .populate('friends')
+        .populate('groups')
         .exec(
         (err,data)=>{
             if(!err){
@@ -132,8 +139,8 @@ router.put("/:id",(request,response)=>{
 });
 
 router.get("/mail",(request,response)=>{
-    response.json({"email","khaledsabbah000@yahoo.com"});
-}
+    response.json({email:"khaledsabbah000@yahoo.com"});
+});
 router.post("/mail",bodyParserMiddelWare,(request,response)=>{
     console.log(request.body.email);
     var result={"status":false,"message":'If this Email was found , An Email would be sent , Hurry and check!'};
@@ -185,6 +192,9 @@ router.post("/mail",bodyParserMiddelWare,(request,response)=>{
 
     response.json(result);
 }
+)
 
-
+middlebody=require("../util/paramsaver");
+router.use("/:ordid",middlebody);
+router.use("/:ordid/group/",groupRouter);
 module.exports= router;
