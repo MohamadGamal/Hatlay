@@ -14,10 +14,21 @@ var error = require("../error");
 var jwt = require ("jsonwebtoken")
 
 var validator = require('validator');
+/*
+router.cases={
+on :function(str,success,fail){
+this.events[str].push(x);
+
+},
+events:{
+ev:[],
 
 
-
+}
+}
+*/
 router.get("/:id",function(request,response){
+
 
   mongoose.model("user")
             /// get user id from request
@@ -31,14 +42,29 @@ router.get("/:id",function(request,response){
                   console.log(i,i<user[option.field].length);
                     if (i==user[option.field].length){
 
-                                user[option.field].push(request.params.id);
+                              user[option.field].push(request.params.id);
                               user.save(()=>{
                                     if(!err){
-                                          response.status("200");
-                                          response.send("ok");
+                                          //useraccept
+                                        //  this.cases.events['myevent'].forEach((element)=>element(request))
+                                        /*
+                                                user.notification=[sdsfdsfdsf]
+                                          
+
+
+                                        */
+                                                if(option.successCallback){
+                                                                  option.successCallback({sender:request.user.name,
+                                                                              reciver:request.params.id});
+                                                      }
+                                                response.status("200");
+                                                response.send("ok");
                                           }else{
-                                          response.status("500");
-                                          response.send("err");
+                                                if(option.successCallback){
+                                                            option.failureCallback();
+                                                            }
+                                                response.status("500");
+                                                response.send("err");
                                           }
                               });                      
                               

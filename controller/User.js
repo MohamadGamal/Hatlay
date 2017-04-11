@@ -13,8 +13,45 @@ var validator = require('validator');
 var bodyParserMiddelWare = bodyParser.urlencoded({extended:false});
 router.use(bodyParser.json());
 
-var friendRouter = require("./UserEmbded")({collection:"user",field:"friends"}); 
+var successCallback = function (param) {
+    console.log(param);
+//    console.log((socketMap.get(param.reciver)).size);
+    if(socketMap.get(param.reciver)){
+        for (var key of  socketMap.get(param.reciver).keys()) {
+                key.emit('message', {type:'new-message', 
+                                    text:param.sender+" follow you !"});
+                console.log("con st :"+key.connected);
+            }
+    }
+    mongoose.set('debug',true);
+    mongoose.model("user").update({_id:param.reciver},
+            {
+                $push:{
+                    notification:{
+                                    body:param.sender +" follow you." ,statues:1
+                                 }
+            } },(err,d)=>console.log(err , d));
 
+
+}
+
+var failureCallback = function(err){
+    console.log(""+err);
+}
+
+var friendRouter = require("./UserEmbded")({
+    collection:"user",
+    field:"friends",
+    successCallback:successCallback,
+    failureCallback:failureCallback
+}); 
+// friendRouter.on('save',(data)=>{
+//     for (var key of socketMap.get(request.params.id).keys()) {
+//                   key.emit('message', {type:'new-message', text:request.user.name+" follow you !"});
+//                   console.log("key ");
+//             }
+
+// })
 router.use("/friend",friendRouter);
 
 
@@ -69,6 +106,9 @@ router.post("/login",(request,response)=>{
 
 
 router.get("/",(request , response)=>{
+
+    console.log(x);
+
     mongoose.set('debug',true);
         mongoose.model("user")
         ///// return just 10 friends 

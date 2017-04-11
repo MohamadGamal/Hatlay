@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "prestart": "npm install",
-    "start":"node app.js"
+    "start": "node app.js"
   },
   "author": "kazafy",
   "license": "ISC",
@@ -16,6 +16,7 @@
     "jsonwebtoken": "^7.3.0",
     "mongoose": "^4.9.1",
     "sendmail": "^1.1.1",
+    "socket.io": "^1.7.3",
     "validator": "^7.0.0"
   }
 }
