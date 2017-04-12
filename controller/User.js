@@ -12,7 +12,7 @@ var validator = require('validator');
 
 var bodyParserMiddelWare = bodyParser.urlencoded({extended:false});
 router.use(bodyParser.json());
-<<<<<<< HEAD
+
 
 var successCallback = function (param) {
     console.log(param);
@@ -39,10 +39,9 @@ var successCallback = function (param) {
 var failureCallback = function(err){
     console.log(""+err);
 }
-=======
+
  var modelRouter=require("./Router_Document")("User");
-var friendRouter = require("./UserEmbded")({collection:"user",field:"friends"}); 
->>>>>>> afed4dca1ce939f7faaac0133918581bed1dd678
+//var friendRouter = require("./UserEmbded")({collection:"user",field:"friends"}); 
 
 var friendRouter = require("./UserEmbded")({
     collection:"user",
@@ -237,12 +236,7 @@ router.post("/mail",bodyParserMiddelWare,(request,response)=>{
     }
 
     response.json(result);
-<<<<<<< HEAD
 });
-=======
-}
-)
->>>>>>> afed4dca1ce939f7faaac0133918581bed1dd678
 
 middlebody=require("../util/paramsaver");
 router.use("/:ordid",middlebody);
