@@ -8,6 +8,7 @@ var user =new  Schema({
     password : {type:String,required:true},
     friends  : [{type:Schema.Types.ObjectId,ref:'user'}],
     groups   : [{type:Schema.Types.ObjectId,ref: "groups"}],
-    notification :[{}]
+    notification :[{}],
+    _token	 : {type:String,required:false},
 });
 mongoose.model("user",user);
