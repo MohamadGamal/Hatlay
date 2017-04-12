@@ -19,7 +19,7 @@ app.use(bodyParser.json())
 //app.use(xssvalidator);
 
 var http = require('http').Server(app);
-io = require('socket.io')(http);
+var io = require('socket.io')(http);
 
 var fs=require("fs");
 fs.readdirSync(__dirname+"/model").forEach(function(file){
@@ -34,8 +34,9 @@ console.log("lol");
 
 app.use(function(request,response,next){          
     response.setHeader('Access-Control-Allow-Origin', '*');
+    response.setHeader('Access-Control-Allow-Origin' , 'http://localhost:4200');
     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,x-access-token');
+    response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,x-access-token, Accept');
     response.setHeader('Access-Control-Allow-Credentials', true);
     response.setHeader('X-XSS-Protection',true);
     next();
@@ -60,8 +61,7 @@ app.use(function(request,response,next){
 
         });
 });
-app.use("/user",userRouter);
-
+ 
 io.on('connection', (socket) => { 
     console.log('user connected');    
 
@@ -70,6 +70,7 @@ io.on('connection', (socket) => {
         if(token){
                 jwt.verify(token,config.secret,function(err,user){
                     if(!err){
+                         console.log("user socket"); 
                          console.log(user); 
            
                         if(socketMap.get(user.id)){
@@ -103,6 +104,7 @@ io.on('connection', (socket) => {
 
 }); 
 
+app.use("/user",userRouter);
 app.use("/order",orderRouter);
 app.use("/group",groupRouter);
 app.use("/resturant",resturantRouter);
@@ -110,4 +112,5 @@ app.use("*",(request,response)=>{
     response.json(request.user);
 });
 
-app.listen(process.env.PORT || 8000);
+http.listen(process.env.PORT || 8000);
+//http.listen(8000);
