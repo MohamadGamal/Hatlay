@@ -12,6 +12,7 @@ var validator = require('validator');
 
 var bodyParserMiddelWare = bodyParser.urlencoded({extended:false});
 router.use(bodyParser.json());
+<<<<<<< HEAD
 
 var successCallback = function (param) {
     console.log(param);
@@ -38,6 +39,10 @@ var successCallback = function (param) {
 var failureCallback = function(err){
     console.log(""+err);
 }
+=======
+ var modelRouter=require("./Router_Document")("User");
+var friendRouter = require("./UserEmbded")({collection:"user",field:"friends"}); 
+>>>>>>> afed4dca1ce939f7faaac0133918581bed1dd678
 
 var friendRouter = require("./UserEmbded")({
     collection:"user",
@@ -53,7 +58,10 @@ var friendRouter = require("./UserEmbded")({
 
 // })
 router.use("/friend",friendRouter);
-
+var groupRouter=modelRouter({
+             propname:"groups"
+          
+          });
 
 // router.use((request,response,next)=>{
 //      response.send(error.email);
@@ -88,7 +96,9 @@ router.post("/login",(request,response)=>{
     console.log(request.body.email);
     mongoose.model("user")
         .findOne({email:request.body.email})
+        .populate('groups')
         .populate('friends','name')
+       
         .exec((err,user)=>{
 
             if(user && user.password == request.body.password){
@@ -114,6 +124,7 @@ router.get("/",(request , response)=>{
         ///// return just 10 friends 
         .find({},{friends:{$slice:10}})
         .populate('friends')
+        .populate('groups')
         .exec((err,data)=>{
             if(!err){
                 response.json(data);                
@@ -126,6 +137,7 @@ router.get("/:id",(request , response)=>{
         mongoose.model("user")
         .findOne({_id:request.params.id})
         .populate('friends')
+        .populate('groups')
         .exec(
         (err,data)=>{
             if(!err){
@@ -225,7 +237,14 @@ router.post("/mail",bodyParserMiddelWare,(request,response)=>{
     }
 
     response.json(result);
+<<<<<<< HEAD
 });
+=======
+}
+)
+>>>>>>> afed4dca1ce939f7faaac0133918581bed1dd678
 
-
+middlebody=require("../util/paramsaver");
+router.use("/:ordid",middlebody);
+router.use("/:ordid/group/",groupRouter);
 module.exports= router;

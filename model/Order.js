@@ -2,7 +2,7 @@ var mongoose=require("mongoose")
 var Schema=mongoose.Schema;
 
 var orders=new Schema({
-  number:{type:Number,required:true},
+ 
   icon:{type:String,default:"sa"},
    name:{type:String,required:true},
   status:{type:String,required:true, enum: ['Active', 'Finished','Cancelled'],default:'Active'},
@@ -18,6 +18,8 @@ var orders=new Schema({
   }]
   ,required:true 
 },
+resturant:{type:Schema.Types.ObjectId,ref: "resturants"}
+,
   meals:
   [{
     name:String,

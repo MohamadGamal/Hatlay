@@ -11,4 +11,4 @@ var user =new  Schema({
     notification :[{}],
     _token	 : {type:String,required:false},
 });
-mongoose.model("user",user);
+module.exports=mongoose.model("user",user);
