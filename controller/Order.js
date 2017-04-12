@@ -53,7 +53,26 @@ Order.findOne({'_id':request.params.query},
         }
       });
 });
+router.get("/:query/finalize/",function(request,response){
+//$text:{$search:request.params.query}
+//var srchobj=validator.isMongoId(request.params.query)?{_id:request.params.query}:{$text:{$search:request.params.query}};
+//db.orders.mapReduce(,,{query:,out:{inline:1}}).results
 
+Order.mapReduce({
+  map:function(){for(i of this.meals){emit({id:i.userId,name:i.username},i.price)}},
+  reduce:function(keys,vals){return Array.sum(vals)},
+  query:{_id:request.params.query}
+
+
+
+
+},
+      function (err , data){
+        if(!err){
+          response.json(data);
+        }
+      });
+});
 
 
 router.get("/user/:query",function(request,response){
