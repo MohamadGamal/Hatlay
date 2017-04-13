@@ -30,6 +30,8 @@ x = 0;
 socketMap = new Map();
 console.log("lol");
 
+var distDir = __dirname + "/dist/";
+app.use(express.static(distDir));
 
 
 app.use(function(request,response,next){          
@@ -108,6 +110,8 @@ app.use("/user",userRouter);
 app.use("/order",orderRouter);
 app.use("/group",groupRouter);
 app.use("/resturant",resturantRouter);
+
+
 app.use("*",(request,response)=>{
     response.json(request.user);
 });
