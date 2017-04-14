@@ -8,7 +8,7 @@ var orders=new Schema({
   status:{type:String,required:true, enum: ['Active', 'Finished','Cancelled'],default:'Active'},
   time:{type:String,match:/^[0-9]{1,2}:[0-9]{1,2}$/},
   createdate:{type:Date,default:Date.now()},//could use timestamps
- adminId    : {type:Schema.Types.ObjectId,required:true},
+ adminId    : {type:Schema.Types.ObjectId,ref: "user",required:true},
   users:
  { type:[{
     userId:{type:Schema.Types.ObjectId,required:true},

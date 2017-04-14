@@ -12,7 +12,7 @@ var groupRouter=require("./controller/Group");
 var jwt = require ("jsonwebtoken")
 
 var mongoose=require("mongoose");
-mongoose.connect(config.onlinedb);
+mongoose.connect(config.db);
 
 var app = express();
 app.use(bodyParser.json())
