@@ -6,6 +6,7 @@ var Schema = mongoose.Schema;
 var user =new  Schema({
     name     : {type:String,required:true},
     email    : {type:String,required:true,unique:true},
+    img      : {type:String},    
     password : {type:String,required:true},
     friends  : [{type:Schema.Types.ObjectId,ref:'user'}],
     groups   : [{type:Schema.Types.ObjectId,ref: "groups"}],

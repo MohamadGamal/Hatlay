@@ -3,10 +3,11 @@ var router     = express.Router();
 var mongoose   = require("mongoose");
                  require("../model/User");
 var bodyParser = require("body-parser");
-
+var handelError = require ("./ErrorHandler");
 var config = require ("../config");
 var error = require("../error");
 var jwt = require ("jsonwebtoken")
+var fs=require("fs");
 
 var validator = require('validator');
 
@@ -16,10 +17,10 @@ router.use(bodyParser.json());
 
 var successCallback = function (param) {
     console.log(param);
-    var statues = 0;
+    var statues = 1;
 //    console.log((socketMap.get(param.reciver)).size);
     if(socketMap.get(param.reciver)){
-        statues = 1; 
+        statues = 0; 
         for (var key of  socketMap.get(param.reciver).keys()) {
                 key.emit('message', {type:'new-message', 
                                     text:param.sender+" follow you !"});
@@ -87,9 +88,7 @@ router.post("/register",(request , response )=>{
             var u= {name:user.name,id:user.id};
             response.json({user:u,token:token});
         }else{
-            response.status(550);
-            console.log(err.code);
-            response.json(err.code);
+            handelError(response,{err:{message:"registeration faield please try again "}});
         }
     });
 });
@@ -113,19 +112,18 @@ router.post("/login",(request,response)=>{
         .populate('friends','name')
        
         .exec((err,user)=>{
-
+            if (!user){
+                 handelError(response,{err:{message:"Email or password not vaild"}},404);
+                 return;
+            }
             user.comparePassword(request.body.password, function(err, isMatch) {
                     if (isMatch){
                         response.status(200);
                         user.password = "";
                         user.friends = user.friends?user.friends:[];
                         user.groups = user.groups?user.groups:[];
-                        console.log(user);
                         var token = jwt.sign({name:user.name,id:user.id},config.secret,{expiresIn:1440*60})
                         response.json({user:user,token:token});
-
-
-
                         }
                 });
 
@@ -182,22 +180,24 @@ router.delete("/:id",(request,response)=>{
                 response.status(200);
                 response.json("ok");
             }else{
-                response.status(550);
-                response.json("error");
+                handelError(response,{err:{message:"err"}},404);
             }
         })
 });
 
-router.put("/:id",(request,response)=>{
-    mongoose.set('debug',true);    
+router.put("/",bodyParserMiddelWare,(request,response)=>{
+    mongoose.set('debug',true);  
+    console.log(request.body);  
+    rewriteimage(request.body,"image");
 
-    mongoose.model("user").update({_id:request.params.id},{$set:request.body},(err,data)=>{
+    mongoose.model("user").update({_id:request.user.id},
+    {$set:{img:request.body.image,name:request.body.name}}       
+    ,(err,data)=>{
         if(!err){
             response.status(200);
             response.send("ok");
         }else{
-            response.status(550);
-            response.send("err");
+            handelError(response,{err:{message:"err"}},404);
         }        
     })
 });
@@ -257,6 +257,20 @@ router.post("/mail",bodyParserMiddelWare,(request,response)=>{
 
     response.json(result);
 });
+
+
+function rewriteimage(body,propname,dest="."){
+var Randname= Math.round(Math.random()*10000000) +""+ +new Date();
+var Fullname=dest+"/"+Randname;
+ var matches = body[propname].match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
+var imbuffer = new Buffer(matches[2], 'base64')
+fs.writeFileSync(Fullname, imbuffer);
+body[propname]=Fullname;
+console.log("WRITTEN");
+
+
+}
+
 
 middlebody=require("../util/paramsaver");
 router.use("/:ordid",middlebody);
