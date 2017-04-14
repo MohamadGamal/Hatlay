@@ -1,22 +1,30 @@
-var express    = require("express");
-var router     = express.Router();
-var mongoose   = require("mongoose");
-                 require("../model/User");
+var express = require("express");
+var router = express.Router();
+var mongoose = require("mongoose");
+require("../model/User");
 var bodyParser = require("body-parser");
+<<<<<<< HEAD
 var handelError = require ("./ErrorHandler");
 var config = require ("../config");
 var error = require("../error");
 var jwt = require ("jsonwebtoken")
 var fs=require("fs");
+=======
+
+var config = require("../config");
+var error = require("../error");
+var jwt = require("jsonwebtoken")
+>>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
 
 var validator = require('validator');
 
-var bodyParserMiddelWare = bodyParser.urlencoded({extended:false});
+var bodyParserMiddelWare = bodyParser.urlencoded({ extended: false });
 router.use(bodyParser.json());
 
 
 var successCallback = function (param) {
     console.log(param);
+<<<<<<< HEAD
     var statues = 1;
 //    console.log((socketMap.get(param.reciver)).size);
     if(socketMap.get(param.reciver)){
@@ -27,32 +35,47 @@ var successCallback = function (param) {
                 console.log("con st :"+key.connected);
             }
         
+=======
+    var statues = 0;
+    //    console.log((socketMap.get(param.reciver)).size);
+    if (socketMap.get(param.reciver)) {
+        statues = 1;
+        for (var key of socketMap.get(param.reciver).keys()) {
+            key.emit('message', {
+                type: 'new-message',
+                text: param.sender + " follow you !"
+            });
+            console.log("con st :" + key.connected);
+        }
+
+>>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
     }
-    mongoose.set('debug',true);
-    mongoose.model("user").update({_id:param.reciver},
-            {
-                $push:{
-                    notification:{
-                                    body:param.sender +" follow you." ,statues:statues
-                                 }
-            } },(err,d)=>console.log(err , d));
+    mongoose.set('debug', true);
+    mongoose.model("user").update({ _id: param.reciver },
+        {
+            $push: {
+                notification: {
+                    body: param.sender + " follow you.", statues: statues
+                }
+            }
+        }, (err, d) => console.log(err, d));
 
 
 }
 
-var failureCallback = function(err){
-    console.log(""+err);
+var failureCallback = function (err) {
+    console.log("" + err);
 }
 
- var modelRouter=require("./Router_Document")("User");
+var modelRouter = require("./Router_Document")("User");
 //var friendRouter = require("./UserEmbded")({collection:"user",field:"friends"}); 
 
 var friendRouter = require("./UserEmbded")({
-    collection:"user",
-    field:"friends",
-    successCallback:successCallback,
-    failureCallback:failureCallback
-}); 
+    collection: "user",
+    field: "friends",
+    successCallback: successCallback,
+    failureCallback: failureCallback
+});
 // friendRouter.on('save',(data)=>{
 //     for (var key of socketMap.get(request.params.id).keys()) {
 //                   key.emit('message', {type:'new-message', text:request.user.name+" follow you !"});
@@ -60,11 +83,11 @@ var friendRouter = require("./UserEmbded")({
 //             }
 
 // })
-router.use("/friend",friendRouter);
-var groupRouter=modelRouter({
-             propname:"groups"
-          
-          });
+router.use("/friend", friendRouter);
+var groupRouter = modelRouter({
+    propname: "groups"
+
+});
 
 // router.use((request,response,next)=>{
 //      response.send(error.email);
@@ -77,38 +100,49 @@ var groupRouter=modelRouter({
 //    next();
 // });
 
-router.post("/register",(request , response )=>{    
-    var UserModel = mongoose.model("user");    
+router.post("/register", (request, response) => {
+    var UserModel = mongoose.model("user");
     user = new UserModel(request.body);
-    user.save ((err,data)=>{
-        if(!err){
+    user.save((err, data) => {
+        if (!err) {
             response.status(200);
             console.log(data);
+<<<<<<< HEAD
             var token = jwt.sign({name:data.name,id:data.id},config.secret,{expiresIn:1440*60})
             var u= {name:user.name,id:user.id};
             response.json({user:u,token:token});
         }else{
             handelError(response,{err:{message:"registeration faield please try again "}});
+=======
+            var token = jwt.sign({ name: data.name, id: data.id }, config.secret, { expiresIn: 1440 * 60 })
+            var u = { name: user.name, id: user.id };
+            response.json({ user: u, token: token });
+        } else {
+            response.status(550);
+            console.log(err.code);
+            response.json(err.code);
+>>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
         }
     });
 });
 
-router.get("/notification",(request,response)=>{
+router.get("/notification", (request, response) => {
     console.log("notification");
-    mongoose.set("debug",true);
+    mongoose.set("debug", true);
     mongoose.model("user")
-            .update({_id:request.user.id},
-                {notification:[{$set:{statues:0}}]},
-                (err,data)=>{
-                    response.send("ok");
-                });                
+        .update({ _id: request.user.id },
+        { notification: [{ $set: { statues: 0 } }] },
+        (err, data) => {
+            response.send("ok");
+        });
 });
 
-router.post("/login",(request,response)=>{
+router.post("/login", (request, response) => {
     console.log(request.body.email);
     mongoose.model("user")
-        .findOne({email:request.body.email})
+        .findOne({ email: request.body.email })
         .populate('groups')
+<<<<<<< HEAD
         .populate('friends','name')
        
         .exec((err,user)=>{
@@ -126,65 +160,92 @@ router.post("/login",(request,response)=>{
                         response.json({user:user,token:token});
                         }
                 });
+=======
+        .populate('friends', 'name')
+
+        .exec((err, user) => {
+
+            user.comparePassword(request.body.password, function (err, isMatch) {
+                if (isMatch) {
+                    response.status(200);
+                    user.password = "";
+                    user.friends = user.friends ? user.friends : [];
+                    user.groups = user.groups ? user.groups : [];
+                    console.log(user);
+                    var token = jwt.sign({ name: user.name, id: user.id }, config.secret, { expiresIn: 1440 * 60 })
+                    response.json({ user: user, token: token });
+
+
+
+                }
+            });
+>>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
 
         }
         );
 });
 
 
-router.get("/",(request , response)=>{
+router.get("/", (request, response) => {
 
     console.log(x);
 
-    mongoose.set('debug',true);
-        mongoose.model("user")
+    mongoose.set('debug', true);
+    mongoose.model("user")
         ///// return just 10 friends 
-        .find({},{friends:{$slice:10}})
+        .find({}, { friends: { $slice: 10 } })
         .populate('friends')
         .populate('groups')
-        .exec((err,data)=>{
-            if(!err){
-                response.json(data);                
+        .exec((err, data) => {
+            if (!err) {
+                response.json(data);
             }
         })
 });
 
-router.get("/:id",(request , response)=>{
-    if(validator.isMongoId(request.params.id)){
+router.get("/:id", (request, response) => {
+    if (validator.isMongoId(request.params.id)) {
         mongoose.model("user")
-        .findOne({_id:request.params.id})
-        .populate('friends')
-        .populate('groups')
-        .exec(
-        (err,data)=>{
-            if(!err){
-                response.json(data);                
+            .findOne({ _id: request.params.id })
+            .populate('friends')
+            .populate('groups')
+            .exec(
+            (err, data) => {
+                if (!err) {
+                    response.json(data);
                 }
             })
     }
-    else{
+    else {
         mongoose.model("user")
-        .find({$text:{$search:request.params.id}},(err,data)=>{
-            if(!err){
-                response.json(data);                
+            .find({ $text: { $search: request.params.id } }, (err, data) => {
+                if (!err) {
+                    response.json(data);
                 }
-            })        
-        }
+            })
+    }
 });
 
-router.delete("/:id",(request,response)=>{
-    mongoose.set('debug',true);
+router.delete("/:id", (request, response) => {
+    mongoose.set('debug', true);
     mongoose.model("user")
-        .remove({_id:request.params.id},(err ,data)=>{
-            if(!err){
+        .remove({ _id: request.params.id }, (err, data) => {
+            if (!err) {
                 response.status(200);
                 response.json("ok");
+<<<<<<< HEAD
             }else{
                 handelError(response,{err:{message:"err"}},404);
+=======
+            } else {
+                response.status(550);
+                response.json("error");
+>>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
             }
         })
 });
 
+<<<<<<< HEAD
 router.put("/",bodyParserMiddelWare,(request,response)=>{
     mongoose.set('debug',true);  
     console.log(request.body);  
@@ -199,30 +260,43 @@ router.put("/",bodyParserMiddelWare,(request,response)=>{
         }else{
             handelError(response,{err:{message:"err"}},404);
         }        
+=======
+router.put("/:id", (request, response) => {
+    mongoose.set('debug', true);
+
+    mongoose.model("user").update({ _id: request.params.id }, { $set: request.body }, (err, data) => {
+        if (!err) {
+            response.status(200);
+            response.send("ok");
+        } else {
+            response.status(550);
+            response.send("err");
+        }
+>>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
     })
 });
 
-router.get("/mail",(request,response)=>{
-    response.json({"email":"khaledsabbah000@yahoo.com"});
+router.get("/mail", (request, response) => {
+    response.json({ "email": "khaledsabbah000@yahoo.com" });
 });
 
-router.post("/mail",bodyParserMiddelWare,(request,response)=>{
+router.post("/mail", bodyParserMiddelWare, (request, response) => {
     console.log(request.body.email);
-    var result={"status":false,"message":'If this Email was found , An Email would be sent , Hurry and check!'};
-    var token = jwt.sign({name:data.name,id:data.id},config.secret,{expiresIn:1440*60});
+    var result = { "status": false, "message": 'If this Email was found , An Email would be sent , Hurry and check!' };
+    var token = jwt.sign({ name: data.name, id: data.id }, config.secret, { expiresIn: 1440 * 60 });
     mongoose.model("user")
-        .findOne({email:request.body.email},function(err,user){
-            if(user){
-                user._token=token;
-                result.status=true;
+        .findOne({ email: request.body.email }, function (err, user) {
+            if (user) {
+                user._token = token;
+                result.status = true;
                 user.save(function (err) {
-                    if(err){
-                        result.status=false;
+                    if (err) {
+                        result.status = false;
                     }
                 })
             }
-            });
-    if(result.status){
+        });
+    if (result.status) {
         var nodemailer = require('nodemailer');
         var transporter = nodemailer.createTransport({
             host: 'smtp.mail.yahoo.com',
@@ -232,24 +306,24 @@ router.post("/mail",bodyParserMiddelWare,(request,response)=>{
                 user: 'khaledsabbah000@yahoo.com',
                 pass: 'Kh040534280997'
             }
-        });    
-        
-        var from='"YallaNutlob " <khaledsabbah000@yahoo.com>';
-        var subject ='YallaNutlob password reset Notification';
-        var url="https://hatlay.herokuapp.com/user/?_token="+token;
+        });
+
+        var from = '"YallaNutlob " <khaledsabbah000@yahoo.com>';
+        var subject = 'YallaNutlob password reset Notification';
+        var url = "https://hatlay.herokuapp.com/user/?_token=" + token;
         var mailOptions = {
             from: from, // sender address (who sends)
-            to: request.body.email , // list of receivers (who receives)
-            subject: subject , // Subject line
+            to: request.body.email, // list of receivers (who receives)
+            subject: subject, // Subject line
             text: 'Hi  this is the mail as requried to be sent', // plaintext body
-            html: '<b>Please click this link to reset your password </b>'+url+
-                        ' How to register using facebook and google in Node.js</a><img scr="/home/khaledgamal/Pictures/Killua1.jpg">' // html body
+            html: '<b>Please click this link to reset your password </b>' + url +
+            ' How to register using facebook and google in Node.js</a><img scr="/home/khaledgamal/Pictures/Killua1.jpg">' // html body
         };
 
-        transporter.sendMail(mailOptions, function(error, info){
-            if(error){
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
                 console.log("some thing happened and cause errors in mailing sevice")
-                result.status=false;
+                result.status = false;
             }
 
         });
@@ -258,6 +332,7 @@ router.post("/mail",bodyParserMiddelWare,(request,response)=>{
     response.json(result);
 });
 
+<<<<<<< HEAD
 
 function rewriteimage(body,propname,dest="."){
 var Randname= Math.round(Math.random()*10000000) +""+ +new Date();
@@ -276,3 +351,9 @@ middlebody=require("../util/paramsaver");
 router.use("/:ordid",middlebody);
 router.use("/:ordid/group/",groupRouter);
 module.exports= router;
+=======
+middlebody = require("../util/paramsaver");
+router.use("/:ordid", middlebody);
+router.use("/:ordid/group/", groupRouter);
+module.exports = router;
+>>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
