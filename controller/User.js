@@ -16,20 +16,23 @@ router.use(bodyParser.json());
 
 var successCallback = function (param) {
     console.log(param);
+    var statues = 0;
 //    console.log((socketMap.get(param.reciver)).size);
     if(socketMap.get(param.reciver)){
+        statues = 1; 
         for (var key of  socketMap.get(param.reciver).keys()) {
                 key.emit('message', {type:'new-message', 
                                     text:param.sender+" follow you !"});
                 console.log("con st :"+key.connected);
             }
+        
     }
     mongoose.set('debug',true);
     mongoose.model("user").update({_id:param.reciver},
             {
                 $push:{
                     notification:{
-                                    body:param.sender +" follow you." ,statues:1
+                                    body:param.sender +" follow you." ,statues:statues
                                  }
             } },(err,d)=>console.log(err , d));
 
@@ -91,6 +94,17 @@ router.post("/register",(request , response )=>{
     });
 });
 
+router.get("/notification",(request,response)=>{
+    console.log("notification");
+    mongoose.set("debug",true);
+    mongoose.model("user")
+            .update({_id:request.user.id},
+                {notification:[{$set:{statues:0}}]},
+                (err,data)=>{
+                    response.send("ok");
+                });                
+});
+
 router.post("/login",(request,response)=>{
     console.log(request.body.email);
     mongoose.model("user")
@@ -100,15 +114,21 @@ router.post("/login",(request,response)=>{
        
         .exec((err,user)=>{
 
-            if(user && user.password == request.body.password){
-                response.status(200);
-                user.password = "";
-                user.friends = user.friends?user.friends:[];
-                user.groups = user.groups?user.groups:[];
-                console.log(user);
-                var token = jwt.sign({name:user.name,id:user.id},config.secret,{expiresIn:1440*60})
-                response.json({user:user,token:token});
-            }
+            user.comparePassword(request.body.password, function(err, isMatch) {
+                    if (isMatch){
+                        response.status(200);
+                        user.password = "";
+                        user.friends = user.friends?user.friends:[];
+                        user.groups = user.groups?user.groups:[];
+                        console.log(user);
+                        var token = jwt.sign({name:user.name,id:user.id},config.secret,{expiresIn:1440*60})
+                        response.json({user:user,token:token});
+
+
+
+                        }
+                });
+
         }
         );
 });
