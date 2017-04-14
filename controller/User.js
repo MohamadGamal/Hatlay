@@ -3,18 +3,13 @@ var router = express.Router();
 var mongoose = require("mongoose");
 require("../model/User");
 var bodyParser = require("body-parser");
-<<<<<<< HEAD
+
 var handelError = require ("./ErrorHandler");
 var config = require ("../config");
 var error = require("../error");
 var jwt = require ("jsonwebtoken")
 var fs=require("fs");
-=======
 
-var config = require("../config");
-var error = require("../error");
-var jwt = require("jsonwebtoken")
->>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
 
 var validator = require('validator');
 
@@ -24,7 +19,7 @@ router.use(bodyParser.json());
 
 var successCallback = function (param) {
     console.log(param);
-<<<<<<< HEAD
+
     var statues = 1;
 //    console.log((socketMap.get(param.reciver)).size);
     if(socketMap.get(param.reciver)){
@@ -35,20 +30,20 @@ var successCallback = function (param) {
                 console.log("con st :"+key.connected);
             }
         
-=======
-    var statues = 0;
-    //    console.log((socketMap.get(param.reciver)).size);
-    if (socketMap.get(param.reciver)) {
-        statues = 1;
-        for (var key of socketMap.get(param.reciver).keys()) {
-            key.emit('message', {
-                type: 'new-message',
-                text: param.sender + " follow you !"
-            });
-            console.log("con st :" + key.connected);
-        }
+// =======
+//     var statues = 0;
+//     //    console.log((socketMap.get(param.reciver)).size);
+//     if (socketMap.get(param.reciver)) {
+//         statues = 1;
+//         for (var key of socketMap.get(param.reciver).keys()) {
+//             key.emit('message', {
+//                 type: 'new-message',
+//                 text: param.sender + " follow you !"
+//             });
+//             console.log("con st :" + key.connected);
+//         }
 
->>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
+// >>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
     }
     mongoose.set('debug', true);
     mongoose.model("user").update({ _id: param.reciver },
@@ -107,21 +102,12 @@ router.post("/register", (request, response) => {
         if (!err) {
             response.status(200);
             console.log(data);
-<<<<<<< HEAD
             var token = jwt.sign({name:data.name,id:data.id},config.secret,{expiresIn:1440*60})
             var u= {name:user.name,id:user.id};
             response.json({user:u,token:token});
         }else{
             handelError(response,{err:{message:"registeration faield please try again "}});
-=======
-            var token = jwt.sign({ name: data.name, id: data.id }, config.secret, { expiresIn: 1440 * 60 })
-            var u = { name: user.name, id: user.id };
-            response.json({ user: u, token: token });
-        } else {
-            response.status(550);
-            console.log(err.code);
-            response.json(err.code);
->>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
+
         }
     });
 });
@@ -233,19 +219,14 @@ router.delete("/:id", (request, response) => {
             if (!err) {
                 response.status(200);
                 response.json("ok");
-<<<<<<< HEAD
+
             }else{
                 handelError(response,{err:{message:"err"}},404);
-=======
-            } else {
-                response.status(550);
-                response.json("error");
->>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
+
             }
         })
 });
 
-<<<<<<< HEAD
 router.put("/",bodyParserMiddelWare,(request,response)=>{
     mongoose.set('debug',true);  
     console.log(request.body);  
@@ -260,19 +241,7 @@ router.put("/",bodyParserMiddelWare,(request,response)=>{
         }else{
             handelError(response,{err:{message:"err"}},404);
         }        
-=======
-router.put("/:id", (request, response) => {
-    mongoose.set('debug', true);
 
-    mongoose.model("user").update({ _id: request.params.id }, { $set: request.body }, (err, data) => {
-        if (!err) {
-            response.status(200);
-            response.send("ok");
-        } else {
-            response.status(550);
-            response.send("err");
-        }
->>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
     })
 });
 
@@ -332,7 +301,7 @@ router.post("/mail", bodyParserMiddelWare, (request, response) => {
     response.json(result);
 });
 
-<<<<<<< HEAD
+
 
 function rewriteimage(body,propname,dest="."){
 var Randname= Math.round(Math.random()*10000000) +""+ +new Date();
@@ -351,9 +320,4 @@ middlebody=require("../util/paramsaver");
 router.use("/:ordid",middlebody);
 router.use("/:ordid/group/",groupRouter);
 module.exports= router;
-=======
-middlebody = require("../util/paramsaver");
-router.use("/:ordid", middlebody);
-router.use("/:ordid/group/", groupRouter);
-module.exports = router;
->>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
+
