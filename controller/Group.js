@@ -3,11 +3,11 @@ var router=express.Router();
 var Group = require(__dirname+"/../model/Group")
 var fs=require("fs")
 var mongoose=require("mongoose");
-// var modelRouter=require("./Router_Document")("Group");
-// var usersRouter=modelRouter({
-//             propname:"users",
+ var modelRouter=require("./Router_Document")("Group");
+ var usersRouter=modelRouter({
+             propname:"users"
         
-//          });
+          });
 var bodyParser = require('body-parser')
 var postMiddleware = bodyParser.urlencoded({extended:true});
 
@@ -74,5 +74,7 @@ router.delete("/:id",function(request,response){
   response.json(err?err:info);
 })
 });
-
+ middlebody=require("../util/paramsaver");
+router.use("/:ordid",middlebody);
+router.use("/:ordid/user/",usersRouter);
 module.exports=router;

@@ -42,6 +42,21 @@ Order.find({},
         }
       });
 });
+router.get("/notifs/:query",function(request,response){
+//$text:{$search:request.params.query}
+mongoose.set('debug', true); 
+console.log('ZOOOOOOOOOOOZOOO',request.params.query);
+ Order.find({adminId:{$in:JSON.parse(request.params.query)}})
+ .sort({ createdate: -1 })
+ .limit(50)
+ .populate('resturant')
+ .exec(
+      function (err , data){
+        if(!err){
+          response.json(data);
+        }
+      });
+});
 router.get("/:query",function(request,response){
 //$text:{$search:request.params.query}
 //var srchobj=validator.isMongoId(request.params.query)?{_id:request.params.query}:{$text:{$search:request.params.query}};
