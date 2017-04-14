@@ -142,7 +142,7 @@ router.post("/login", (request, response) => {
     mongoose.model("user")
         .findOne({ email: request.body.email })
         .populate('groups')
-<<<<<<< HEAD
+
         .populate('friends','name')
        
         .exec((err,user)=>{
@@ -160,26 +160,26 @@ router.post("/login", (request, response) => {
                         response.json({user:user,token:token});
                         }
                 });
-=======
-        .populate('friends', 'name')
+// =======
+//         .populate('friends', 'name')
 
-        .exec((err, user) => {
+//         .exec((err, user) => {
 
-            user.comparePassword(request.body.password, function (err, isMatch) {
-                if (isMatch) {
-                    response.status(200);
-                    user.password = "";
-                    user.friends = user.friends ? user.friends : [];
-                    user.groups = user.groups ? user.groups : [];
-                    console.log(user);
-                    var token = jwt.sign({ name: user.name, id: user.id }, config.secret, { expiresIn: 1440 * 60 })
-                    response.json({ user: user, token: token });
+//             user.comparePassword(request.body.password, function (err, isMatch) {
+//                 if (isMatch) {
+//                     response.status(200);
+//                     user.password = "";
+//                     user.friends = user.friends ? user.friends : [];
+//                     user.groups = user.groups ? user.groups : [];
+//                     console.log(user);
+//                     var token = jwt.sign({ name: user.name, id: user.id }, config.secret, { expiresIn: 1440 * 60 })
+//                     response.json({ user: user, token: token });
 
 
 
-                }
-            });
->>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
+//                 }
+//             });
+
 
         }
         );
