@@ -37,7 +37,7 @@ app.use(express.static(distDir));
 
 app.use(function(request,response,next){          
     response.setHeader('Access-Control-Allow-Origin', '*');
-    response.setHeader('Access-Control-Allow-Origin' , 'http://localhost:4200');
+    response.setHeader('Access-Control-Allow-Origin' , 'http://hatlay.herokuapp.com/');
     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,x-access-token, Accept');
     response.setHeader('Access-Control-Allow-Credentials', true);
