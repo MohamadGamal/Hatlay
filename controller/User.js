@@ -199,6 +199,8 @@ router.get("/:id", (request, response) => {
             (err, data) => {
                 if (!err) {
                     response.json(data);
+                }else {
+                    response.json(err);
                 }
             })
     }
@@ -207,6 +209,8 @@ router.get("/:id", (request, response) => {
             .find({ $text: { $search: request.params.id } }, (err, data) => {
                 if (!err) {
                     response.json(data);
+                }else {
+                    response.json(err);
                 }
             })
     }
