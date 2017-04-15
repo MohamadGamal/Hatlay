@@ -1887,7 +1887,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 var SocketIOServiceService = (function () {
     function SocketIOServiceService() {
-        this.url = 'http://localhost:8000';
+        this.url = 'https://hatlay.herokuapp.com';
     }
     SocketIOServiceService.prototype.sendMessage = function (message) {
         this.socket.emit('add-message', message);
