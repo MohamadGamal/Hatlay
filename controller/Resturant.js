@@ -29,7 +29,7 @@ Resturants.find(srchobj,
         }
       });
 });
-function rewriteimage(body,propname,dest="."){
+function rewriteimage(body,propname,dest="./dist/assets"){
 var Randname= Math.round(Math.random()*10000000) +""+ +new Date();
 var Fullname=dest+"/"+Randname;
  var matches = body[propname].match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)

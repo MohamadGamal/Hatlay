@@ -45,7 +45,6 @@ app.use(function(request,response,next){
 });
 
 
-
 app.use(function(request,response,next){
     //// get token from header , body or query ,
   var token = request.body.token || request.query.token || request.headers['x-access-token'];
