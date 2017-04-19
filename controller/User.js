@@ -4,9 +4,12 @@ var mongoose = require("mongoose");
 require("../model/User");
 var bodyParser = require("body-parser");
 
-var config = require("../config");
+var handelError = require ("./ErrorHandler");
+var config = require ("../config");
 var error = require("../error");
-var jwt = require("jsonwebtoken")
+var jwt = require ("jsonwebtoken")
+var fs=require("fs");
+
 
 var validator = require('validator');
 
@@ -16,18 +19,31 @@ router.use(bodyParser.json());
 
 var successCallback = function (param) {
     console.log(param);
-    var statues = 0;
-    //    console.log((socketMap.get(param.reciver)).size);
-    if (socketMap.get(param.reciver)) {
-        statues = 1;
-        for (var key of socketMap.get(param.reciver).keys()) {
-            key.emit('message', {
-                type: 'new-message',
-                text: param.sender + " follow you !"
-            });
-            console.log("con st :" + key.connected);
-        }
 
+    var statues = 1;
+//    console.log((socketMap.get(param.reciver)).size);
+    if(socketMap.get(param.reciver)){
+        statues = 0; 
+        for (var key of  socketMap.get(param.reciver).keys()) {
+                key.emit('message', {type:'new-message', 
+                                    text:param.sender+" follow you !"});
+                console.log("con st :"+key.connected);
+            }
+        
+// =======
+//     var statues = 0;
+//     //    console.log((socketMap.get(param.reciver)).size);
+//     if (socketMap.get(param.reciver)) {
+//         statues = 1;
+//         for (var key of socketMap.get(param.reciver).keys()) {
+//             key.emit('message', {
+//                 type: 'new-message',
+//                 text: param.sender + " follow you !"
+//             });
+//             console.log("con st :" + key.connected);
+//         }
+
+// >>>>>>> 6f03be9e81c3aa638b5ded1864340874aa1f3a95
     }
     mongoose.set('debug', true);
     mongoose.model("user").update({ _id: param.reciver },
@@ -86,13 +102,12 @@ router.post("/register", (request, response) => {
         if (!err) {
             response.status(200);
             console.log(data);
-            var token = jwt.sign({ name: data.name, id: data.id }, config.secret, { expiresIn: 1440 * 60 })
-            var u = { name: user.name, id: user.id };
-            response.json({ user: u, token: token });
-        } else {
-            response.status(550);
-            console.log(err.code);
-            response.json(err.code);
+            var token = jwt.sign({name:data.name,id:data.id},config.secret,{expiresIn:1440*60})
+            var u= {name:user.name,id:user.id};
+            response.json({user:u,token:token});
+        }else{
+            handelError(response,{err:{message:"registeration faield please try again "}});
+
         }
     });
 });
@@ -113,24 +128,44 @@ router.post("/login", (request, response) => {
     mongoose.model("user")
         .findOne({ email: request.body.email })
         .populate('groups')
-        .populate('friends', 'name')
 
-        .exec((err, user) => {
+        .populate('friends','name')
+       
+        .exec((err,user)=>{
+            if (!user){
+                 handelError(response,{err:{message:"Email or password not vaild"}},404);
+                 return;
+            }
+            user.comparePassword(request.body.password, function(err, isMatch) {
+                    if (isMatch){
+                        response.status(200);
+                        user.password = "";
+                        user.friends = user.friends?user.friends:[];
+                        user.groups = user.groups?user.groups:[];
+                        var token = jwt.sign({name:user.name,id:user.id},config.secret,{expiresIn:1440*60})
+                        response.json({user:user,token:token});
+                        }
+                });
+// =======
+//         .populate('friends', 'name')
 
-            user.comparePassword(request.body.password, function (err, isMatch) {
-                if (isMatch) {
-                    response.status(200);
-                    user.password = "";
-                    user.friends = user.friends ? user.friends : [];
-                    user.groups = user.groups ? user.groups : [];
-                    console.log(user);
-                    var token = jwt.sign({ name: user.name, id: user.id }, config.secret, { expiresIn: 1440 * 60 })
-                    response.json({ user: user, token: token });
+//         .exec((err, user) => {
+
+//             user.comparePassword(request.body.password, function (err, isMatch) {
+//                 if (isMatch) {
+//                     response.status(200);
+//                     user.password = "";
+//                     user.friends = user.friends ? user.friends : [];
+//                     user.groups = user.groups ? user.groups : [];
+//                     console.log(user);
+//                     var token = jwt.sign({ name: user.name, id: user.id }, config.secret, { expiresIn: 1440 * 60 })
+//                     response.json({ user: user, token: token });
 
 
 
-                }
-            });
+//                 }
+//             });
+
 
         }
         );
@@ -164,6 +199,8 @@ router.get("/:id", (request, response) => {
             (err, data) => {
                 if (!err) {
                     response.json(data);
+                }else {
+                    response.json(err);
                 }
             })
     }
@@ -172,6 +209,8 @@ router.get("/:id", (request, response) => {
             .find({ $text: { $search: request.params.id } }, (err, data) => {
                 if (!err) {
                     response.json(data);
+                }else {
+                    response.json(err);
                 }
             })
     }
@@ -184,24 +223,29 @@ router.delete("/:id", (request, response) => {
             if (!err) {
                 response.status(200);
                 response.json("ok");
-            } else {
-                response.status(550);
-                response.json("error");
+
+            }else{
+                handelError(response,{err:{message:"err"}},404);
+
             }
         })
 });
 
-router.put("/:id", (request, response) => {
-    mongoose.set('debug', true);
+router.put("/",bodyParserMiddelWare,(request,response)=>{
+    mongoose.set('debug',true);  
+    console.log(request.body);  
+    rewriteimage(request.body,"image");
 
-    mongoose.model("user").update({ _id: request.params.id }, { $set: request.body }, (err, data) => {
-        if (!err) {
+    mongoose.model("user").update({_id:request.user.id},
+    {$set:{img:request.body.image,name:request.body.name}}       
+    ,(err,data)=>{
+        if(!err){
             response.status(200);
             response.send("ok");
-        } else {
-            response.status(550);
-            response.send("err");
-        }
+        }else{
+            handelError(response,{err:{message:"err"}},404);
+        }        
+
     })
 });
 
@@ -261,7 +305,23 @@ router.post("/mail", bodyParserMiddelWare, (request, response) => {
     response.json(result);
 });
 
-middlebody = require("../util/paramsaver");
-router.use("/:ordid", middlebody);
-router.use("/:ordid/group/", groupRouter);
-module.exports = router;
+
+
+function rewriteimage(body,propname,dest="."){
+var Randname= Math.round(Math.random()*10000000) +""+ +new Date();
+var Fullname=dest+"/"+Randname;
+ var matches = body[propname].match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
+var imbuffer = new Buffer(matches[2], 'base64')
+fs.writeFileSync(Fullname, imbuffer);
+body[propname]=Fullname;
+console.log("WRITTEN");
+
+
+}
+
+
+middlebody=require("../util/paramsaver");
+router.use("/:ordid",middlebody);
+router.use("/:ordid/group/",groupRouter);
+module.exports= router;
+

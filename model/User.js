@@ -3,15 +3,15 @@ var mongoose = require("mongoose"),
     SALT_WORK_FACTOR = 10;
 var Schema = mongoose.Schema;
 
-var user = new Schema({
-    name: { type: String, required: true },
-    image: { type: String, required: true, default: "sa" },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    friends: [{ type: Schema.Types.ObjectId, ref: 'user' }],
-    groups: [{ type: Schema.Types.ObjectId, ref: "groups" }],
-    notification: [{}],
-    _token: { type: String, required: false },
+var user =new  Schema({
+    name     : {type:String,required:true},
+    email    : {type:String,required:true,unique:true},
+    img      : {type:String},    
+    password : {type:String,required:true},
+    friends  : [{type:Schema.Types.ObjectId,ref:'user'}],
+    groups   : [{type:Schema.Types.ObjectId,ref: "groups"}],
+    notification :[{}],
+    _token	 : {type:String,required:false}
 });
 
 user.pre("save", function (next) {
