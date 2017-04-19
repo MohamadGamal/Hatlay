@@ -98,13 +98,14 @@ var groupRouter = modelRouter({
 router.post("/register", (request, response) => {
     var UserModel = mongoose.model("user");
     user = new UserModel(request.body);
-    user.save((err, data) => {
+    user.save((err, user) => {
         if (!err) {
-            response.status(200);
-            console.log(data);
-            var token = jwt.sign({name:data.name,id:data.id},config.secret,{expiresIn:1440*60})
-            var u= {name:user.name,id:user.id};
-            response.json({user:u,token:token});
+                        response.status(200);
+                        user.password = "";
+                        user.friends = [];
+                        user.groups = [];
+                        var token = jwt.sign({name:user.name,id:user.id},config.secret,{expiresIn:1440*60})
+                        response.json({user:user,token:token});
         }else{
             handelError(response,{err:{message:"registeration faield please try again "}});
 
