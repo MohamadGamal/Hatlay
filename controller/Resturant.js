@@ -42,12 +42,15 @@ console.log("WRITTEN");
 }
 router.post("/",postMiddleware,function(request,response){
 
-   // mongoose.set('debug', true);  
+    mongoose.set('debug', true);  
+    console.log("HI");
     rewriteimage(request.body,"menu");
+     console.log("IN");
     resturants= new Resturants(request.body);
     console.log(resturants);
     console.log(typeof request.body.meals);
     resturants.save(function(err,info){
+       console.log("HI"+info+err);
            response.json(err?err:info);
     });
 
