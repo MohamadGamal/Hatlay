@@ -29,25 +29,28 @@ Resturants.find(srchobj,
         }
       });
 });
-function rewriteimage(body,propname,dest="."){
+function rewriteimage(body,propname,dest="./dist/assets"){
 var Randname= Math.round(Math.random()*10000000) +""+ +new Date();
 var Fullname=dest+"/"+Randname;
  var matches = body[propname].match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
 var imbuffer = new Buffer(matches[2], 'base64')
 fs.writeFileSync(Fullname, imbuffer);
-body[propname]=Fullname;
+body[propname]="assets/"+Randname;
 console.log("WRITTEN");
 
 
 }
 router.post("/",postMiddleware,function(request,response){
 
-   // mongoose.set('debug', true);  
+    mongoose.set('debug', true);  
+    console.log("HI");
     rewriteimage(request.body,"menu");
+     console.log("IN");
     resturants= new Resturants(request.body);
     console.log(resturants);
     console.log(typeof request.body.meals);
     resturants.save(function(err,info){
+       console.log("HI"+info+err);
            response.json(err?err:info);
     });
 
