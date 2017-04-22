@@ -35,7 +35,7 @@ var Fullname=dest+"/"+Randname;
  var matches = body[propname].match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
 var imbuffer = new Buffer(matches[2], 'base64')
 fs.writeFileSync(Fullname, imbuffer);
-body[propname]=Fullname;
+body[propname]="assets/"+Randname;
 console.log("WRITTEN");
 
 
